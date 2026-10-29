@@ -3,6 +3,7 @@ package com.example.harry_potter
 import android.app.Application
 import com.example.harry_potter.data.AppDatabase
 import com.example.harry_potter.data.AuthRepository
+import com.example.harry_potter.data.BattleRepository
 import com.example.harry_potter.data.SessionManager
 import com.example.harry_potter.data.SpellRepository
 import com.example.harry_potter.data.TemplateRepository
@@ -19,6 +20,8 @@ class SpellApplication : Application() {
         private set
     lateinit var sessionManager: SessionManager
         private set
+    lateinit var battleRepository: BattleRepository
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -33,5 +36,6 @@ class SpellApplication : Application() {
         authRepository = AuthRepository(database.userDao(), sessionManager)
         spellRepository = SpellRepository(api, database.favoriteDao())
         templateRepository = TemplateRepository(this)
+        battleRepository = BattleRepository(database.battleDao())
     }
 }

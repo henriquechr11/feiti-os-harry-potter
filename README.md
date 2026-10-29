@@ -10,7 +10,8 @@ Aplicativo Android em Kotlin e Jetpack Compose para explorar feitiços do univer
 
 - Cadastro e login locais com senha armazenada como hash SHA-256.
 - Sessão persistente e favoritos isolados por usuário com Room.
-- Três abas: Feitiços, Desenhar e Favoritos.
+- Quatro abas: Feitiços, Desenhar, Favoritos e Duelo.
+- Duelo de feiticeiros por turnos contra um oponente controlado pelo app (Fácil, Médio ou Difícil): o jogador monta um grimório com 7 feitiços e, a cada turno, tem um tempo limite para desenhar um deles. A precisão do desenho altera a força do feitiço, e vitórias e derrotas ficam salvas por usuário.
 - Tela de detalhe acessada por rota tipada.
 - Vinte e cinco gestos de um traço guardados localmente; o reconhecimento é executado quando o dedo deixa a tela.
 

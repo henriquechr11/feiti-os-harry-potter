@@ -46,6 +46,7 @@ import androidx.navigation.toRoute
 import com.example.harry_potter.data.FavoriteEntity
 import com.example.harry_potter.data.Spell
 import com.example.harry_potter.viewmodel.AuthUiState
+import com.example.harry_potter.viewmodel.BattleViewModel
 import com.example.harry_potter.viewmodel.SpellLoadState
 import com.example.harry_potter.viewmodel.SpellViewModel
 import kotlinx.serialization.Serializable
@@ -53,15 +54,17 @@ import kotlinx.serialization.Serializable
 @Serializable data object SpellListRoute
 @Serializable data object DrawRoute
 @Serializable data object FavoritesRoute
+@Serializable data object DuelRoute
 @Serializable data class DetailRoute(val spellId: String)
 
 @Composable
-fun SpellbookApp(viewModel: SpellViewModel) {
+fun SpellbookApp(viewModel: SpellViewModel, battleViewModel: BattleViewModel) {
     val auth by viewModel.auth.collectAsStateWithLifecycle()
-    if (auth.userId == null) {
+    val userId = auth.userId
+    if (userId == null) {
         AuthScreen(auth, viewModel::login, viewModel::register)
     } else {
-        MainSpellbook(viewModel)
+        MainSpellbook(viewModel, battleViewModel, userId)
     }
 }
 
@@ -101,7 +104,7 @@ private fun AuthScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainSpellbook(viewModel: SpellViewModel) {
+private fun MainSpellbook(viewModel: SpellViewModel, battleViewModel: BattleViewModel, userId: Long) {
     val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry)
     val route = currentRoute?.destination?.route
@@ -111,7 +114,9 @@ private fun MainSpellbook(viewModel: SpellViewModel) {
             TopAppBar(
                 title = { Text(if (isDetail) "Detalhe do feitiço" else "Varinha Mágica") },
                 navigationIcon = { if (isDetail) TextButton(onClick = { navController.popBackStack() }) { Text("Voltar") } },
-                actions = { if (!isDetail) TextButton(onClick = viewModel::signOut) { Text("Sair") } }
+                actions = {
+                    if (!isDetail) TextButton(onClick = { battleViewModel.reset(); viewModel.signOut() }) { Text("Sair") }
+                }
             )
         },
         bottomBar = { if (!isDetail) SpellBottomBar(navController, route) }
@@ -120,6 +125,7 @@ private fun MainSpellbook(viewModel: SpellViewModel) {
             composable<SpellListRoute> { SpellListScreen(viewModel) { navController.navigate(DetailRoute(it)) } }
             composable<DrawRoute> { DrawScreen(viewModel) { navController.navigate(DetailRoute(it)) } }
             composable<FavoritesRoute> { FavoriteScreen(viewModel) { navController.navigate(DetailRoute(it)) } }
+            composable<DuelRoute> { DuelScreen(battleViewModel, userId) }
             composable<DetailRoute> {
                 val detail = it.toRoute<DetailRoute>()
                 SpellDetailScreen(viewModel, detail.spellId)
@@ -130,7 +136,7 @@ private fun MainSpellbook(viewModel: SpellViewModel) {
 
 @Composable
 private fun SpellBottomBar(navController: NavHostController, currentRoute: String?) {
-    val entries = listOf("Feitiços" to SpellListRoute, "Desenhar" to DrawRoute, "Favoritos" to FavoritesRoute)
+    val entries = listOf("Feitiços" to SpellListRoute, "Desenhar" to DrawRoute, "Favoritos" to FavoritesRoute, "Duelo" to DuelRoute)
     NavigationBar {
         entries.forEach { (label, destination) ->
             val selected = currentRoute?.contains(destination::class.simpleName.orEmpty()) == true

@@ -138,6 +138,23 @@ private data class LocalSpell(
     val effect: String
 )
 
+class BattleRepository(private val battleDao: BattleDao) {
+    suspend fun saveResult(userId: Long, opponentName: String, difficulty: String, won: Boolean, turns: Int) {
+        battleDao.insert(
+            BattleResultEntity(
+                userId = userId,
+                opponentName = opponentName,
+                difficulty = difficulty,
+                won = won,
+                turns = turns,
+                playedAt = System.currentTimeMillis()
+            )
+        )
+    }
+
+    fun observeHistory(userId: Long): Flow<List<BattleResultEntity>> = battleDao.observeForUser(userId)
+}
+
 class TemplateRepository(context: Context) {
     private val templates: List<GestureTemplate>
 

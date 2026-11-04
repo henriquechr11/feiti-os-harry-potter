@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Harry-potter"
+rootProject.name = "Hogwarts Legacy 2.0"
 include(":app")

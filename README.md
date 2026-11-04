@@ -1,6 +1,6 @@
-# Varinha Mágica
+# Hogwarts Legacy 2.0
 
-Aplicativo Android em Kotlin e Jetpack Compose para explorar feitiços do universo Harry Potter e reconhecê-los por gestos de um único traço.
+Aplicativo Android em Kotlin e Jetpack Compose para explorar feitiços do universo Hogwarts Legacy e reconhecê-los por gestos de um único traço.
 
 ## API utilizada
 

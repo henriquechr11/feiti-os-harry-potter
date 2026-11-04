@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.harry_potter.ui.theme.HarrypotterTheme
+import com.example.harry_potter.ui.theme.HogwartsLegacy2Theme
 import com.example.harry_potter.userinterface.SpellbookApp
 import com.example.harry_potter.viewmodel.BattleViewModel
 import com.example.harry_potter.viewmodel.SpellViewModel
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HarrypotterTheme {
+            HogwartsLegacy2Theme {
                 val application = application as SpellApplication
                 val spellViewModel: SpellViewModel = viewModel(
                     factory = SpellViewModel.Factory(

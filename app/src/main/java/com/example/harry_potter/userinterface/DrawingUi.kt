@@ -36,6 +36,7 @@ import com.example.harry_potter.viewmodel.SpellViewModel
 fun DrawScreen(viewModel: SpellViewModel, onOpenDetail: (String) -> Unit) {
     var points by remember { mutableStateOf(emptyList<GesturePoint>()) }
     var result by remember { mutableStateOf<RecognitionResult?>(null) }
+    var drawingSession by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -44,6 +45,7 @@ fun DrawScreen(viewModel: SpellViewModel, onOpenDetail: (String) -> Unit) {
         Text("Use apenas um dedo e faça um único traço. O reconhecimento acontece quando você tira o dedo da tela.")
         GestureCanvas(
             points = points,
+            resetSignal = drawingSession,
             onPointsChange = { points = it },
             onStrokeComplete = { result = viewModel.recognize(it) }
         )
@@ -59,13 +61,21 @@ fun DrawScreen(viewModel: SpellViewModel, onOpenDetail: (String) -> Unit) {
                 }
             }
         }
-        if (points.isNotEmpty()) Button(onClick = { points = emptyList(); result = null }) { Text("Limpar desenho") }
+        if (points.isNotEmpty() || result != null) {
+            Button(onClick = {
+                // Changing the key cancels an in-progress drag before clearing.
+                drawingSession++
+                points = emptyList()
+                result = null
+            }) { Text("Limpar desenho") }
+        }
     }
 }
 
 @Composable
 fun GestureCanvas(
     points: List<GesturePoint>,
+    resetSignal: Int,
     onPointsChange: (List<GesturePoint>) -> Unit,
     onStrokeComplete: (List<GesturePoint>) -> Unit,
     modifier: Modifier = Modifier
@@ -77,7 +87,7 @@ fun GestureCanvas(
             .height(310.dp)
             .clipToBounds()
             .border(2.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
-            .pointerInput(Unit) {
+            .pointerInput(resetSignal) {
                 detectDragGestures(
                     onDragStart = { offset -> onPointsChange(listOf(offset.toGesturePoint())) },
                     onDrag = { change, _ ->

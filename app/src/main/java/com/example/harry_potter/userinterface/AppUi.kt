@@ -81,7 +81,7 @@ private fun AuthScreen(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Varinha Mágica", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
+        Text("Hogwarts Legacy 2.0", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
         Text("Entre para guardar seus feitiços favoritos.", style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(28.dp))
         OutlinedTextField(email, { email = it }, Modifier.fillMaxWidth(), label = { Text("E-mail") }, singleLine = true)
@@ -112,7 +112,7 @@ private fun MainSpellbook(viewModel: SpellViewModel, battleViewModel: BattleView
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isDetail) "Detalhe do feitiço" else "Varinha Mágica") },
+                title = { Text(if (isDetail) "Detalhe do feitiço" else "Hogwarts Legacy 2.0") },
                 navigationIcon = { if (isDetail) TextButton(onClick = { navController.popBackStack() }) { Text("Voltar") } },
                 actions = {
                     if (!isDetail) TextButton(onClick = { battleViewModel.reset(); viewModel.signOut() }) { Text("Sair") }
@@ -160,9 +160,42 @@ private fun SpellListScreen(viewModel: SpellViewModel, onOpenDetail: (String) ->
 
 @Composable
 private fun SpellList(spells: List<Spell>, onOpenDetail: (String) -> Unit) {
+    var isSearching by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var query by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    val filteredSpells = spells.filter { spell ->
+        query.isBlank() || spell.name.contains(query, ignoreCase = true) ||
+            spell.incantation?.contains(query, ignoreCase = true) == true
+    }
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        item { Text("Feitiços selecionados", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
-        items(spells, key = { it.id }) { spell -> SpellCard(spell) { onOpenDetail(spell.id) } }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Feitiços selecionados", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                TextButton(onClick = {
+                    isSearching = !isSearching
+                    if (!isSearching) query = ""
+                }) { Text(if (isSearching) "Fechar busca" else "Pesquisar") }
+            }
+        }
+        if (isSearching) {
+            item {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Nome ou encantamento") },
+                    singleLine = true
+                )
+            }
+        }
+        if (filteredSpells.isEmpty()) {
+            item { Text("Nenhum feitiço encontrado.") }
+        } else {
+            items(filteredSpells, key = { it.id }) { spell -> SpellCard(spell) { onOpenDetail(spell.id) } }
+        }
     }
 }
 

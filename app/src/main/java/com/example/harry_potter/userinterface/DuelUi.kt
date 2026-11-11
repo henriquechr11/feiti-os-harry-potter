@@ -147,9 +147,13 @@ private fun DuelArena(
     onCast: (List<GesturePoint>) -> Unit
 ) {
     var points by remember { mutableStateOf(emptyList<GesturePoint>()) }
+    var drawingSession by remember { mutableStateOf(0) }
     var previewSpell by remember { mutableStateOf<BattleSpell?>(null) }
     val isPlayerTurn = state.phase == DuelPhase.PlayerTurn
-    LaunchedEffect(state.turn, state.phase) { points = emptyList() }
+    LaunchedEffect(state.turn, state.phase) {
+        drawingSession++
+        points = emptyList()
+    }
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         DuelistPanel(state.opponent)
@@ -173,6 +177,7 @@ private fun DuelArena(
         Box(Modifier.weight(1f).fillMaxWidth()) {
             GestureCanvas(
                 points = points,
+                resetSignal = drawingSession,
                 onPointsChange = { points = it },
                 onStrokeComplete = onCast,
                 modifier = Modifier.fillMaxSize()
@@ -186,6 +191,16 @@ private fun DuelArena(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+        }
+        if (isPlayerTurn && points.isNotEmpty()) {
+            OutlinedButton(
+                onClick = {
+                    // Reinicia o pointerInput, inclusive se o dedo ainda estiver sobre a arena.
+                    drawingSession++
+                    points = emptyList()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Limpar desenho") }
         }
         DuelLog(state.log.takeLast(4))
     }

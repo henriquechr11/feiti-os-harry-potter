@@ -1,6 +1,7 @@
 package com.example.harry_potter.userinterface
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -81,11 +82,13 @@ fun GestureCanvas(
     modifier: Modifier = Modifier
 ) {
     val latestPoints by rememberUpdatedState(points)
+    val spellColor = MaterialTheme.colorScheme.tertiary
     Canvas(
         modifier = modifier
             .fillMaxWidth()
             .height(310.dp)
             .clipToBounds()
+            .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.medium)
             .border(2.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
             .pointerInput(resetSignal) {
                 detectDragGestures(
@@ -99,7 +102,7 @@ fun GestureCanvas(
                 )
             }
     ) {
-        drawGesture(points, Color(0xFF3A2577), 8f)
+        drawGesture(points, spellColor, 8f)
     }
 }
 
@@ -109,6 +112,7 @@ fun GesturePreview(points: List<GesturePoint>) {
         Text("Ainda não há um modelo de gesto para este feitiço.")
         return
     }
+    val spellColor = MaterialTheme.colorScheme.tertiary
     Canvas(
         modifier = Modifier
             .size(180.dp)
@@ -118,7 +122,7 @@ fun GesturePreview(points: List<GesturePoint>) {
         val maxX = points.maxOf { it.x }.coerceAtLeast(1f)
         val maxY = points.maxOf { it.y }.coerceAtLeast(1f)
         val previewPoints = points.map { GesturePoint(it.x / maxX * size.width, it.y / maxY * size.height) }
-        drawGesture(previewPoints, Color(0xFF3A2577), 6f)
+        drawGesture(previewPoints, spellColor, 6f)
     }
 }
 

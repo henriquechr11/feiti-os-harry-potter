@@ -22,18 +22,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -81,8 +84,9 @@ private fun AuthScreen(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Hogwarts Legacy 2.0", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-        Text("Entre para guardar seus feitiços favoritos.", style = MaterialTheme.typography.bodyLarge)
+        Text("GRIMÓRIO", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+        Text("Hogwarts Legacy", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
+        Text("Entre para guardar seus feitiços favoritos e dominar cada gesto.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(28.dp))
         OutlinedTextField(email, { email = it }, Modifier.fillMaxWidth(), label = { Text("E-mail") }, singleLine = true)
         Spacer(Modifier.height(12.dp))
@@ -110,13 +114,20 @@ private fun MainSpellbook(viewModel: SpellViewModel, battleViewModel: BattleView
     val route = currentRoute?.destination?.route
     val isDetail = route?.contains("DetailRoute") == true
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(if (isDetail) "Detalhe do feitiço" else "Hogwarts Legacy 2.0") },
                 navigationIcon = { if (isDetail) TextButton(onClick = { navController.popBackStack() }) { Text("Voltar") } },
                 actions = {
                     if (!isDetail) TextButton(onClick = { battleViewModel.reset(); viewModel.signOut() }) { Text("Sair") }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.primary
+                )
             )
         },
         bottomBar = { if (!isDetail) SpellBottomBar(navController, route) }
@@ -137,12 +148,25 @@ private fun MainSpellbook(viewModel: SpellViewModel, battleViewModel: BattleView
 @Composable
 private fun SpellBottomBar(navController: NavHostController, currentRoute: String?) {
     val entries = listOf("Feitiços" to SpellListRoute, "Desenhar" to DrawRoute, "Favoritos" to FavoritesRoute, "Duelo" to DuelRoute)
-    NavigationBar {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ) {
         entries.forEach { (label, destination) ->
             val selected = currentRoute?.contains(destination::class.simpleName.orEmpty()) == true
             NavigationBarItem(selected = selected, onClick = {
                 navController.navigate(destination) { launchSingleTop = true; popUpTo(navController.graph.startDestinationId) { saveState = true }; restoreState = true }
-            }, icon = { Text(if (selected) "•" else "○") }, label = { Text(label) })
+            },
+                icon = { Text(if (selected) "•" else "○") },
+                label = { Text(label) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = Color.Transparent,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
         }
     }
 }

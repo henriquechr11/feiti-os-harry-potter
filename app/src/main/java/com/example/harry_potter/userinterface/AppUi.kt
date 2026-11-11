@@ -83,11 +83,16 @@ private fun AuthScreen(
     var email by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     var password by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     val loginFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-        disabledContainerColor = MaterialTheme.colorScheme.surface,
-        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color.White,
+        disabledContainerColor = Color.White,
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black,
+        focusedLabelColor = Color.Black,
+        unfocusedLabelColor = Color.Black,
+        focusedBorderColor = Color.Black,
+        unfocusedBorderColor = Color.Black,
+        cursorColor = Color.Black
     )
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -111,7 +116,11 @@ private fun AuthScreen(
                 contentColor = MaterialTheme.colorScheme.onSurface
             )
         ) { Text(if (state.isWorking) "Aguarde..." else if (isRegister) "Criar conta" else "Entrar") }
-        TextButton(onClick = { isRegister = !isRegister }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+        TextButton(
+            onClick = { isRegister = !isRegister },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.textButtonColors(contentColor = Color.Black)
+        ) {
             Text(if (isRegister) "Já tenho uma conta" else "Ainda não tenho conta")
         }
     }

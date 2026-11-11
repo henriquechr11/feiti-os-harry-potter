@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -25,6 +26,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -80,25 +82,34 @@ private fun AuthScreen(
     var isRegister by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     var email by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     var password by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    val loginFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        disabledContainerColor = MaterialTheme.colorScheme.surface,
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+    )
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("GRIMÓRIO", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
-        Text("Hogwarts Legacy", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-        Text("Entre para guardar seus feitiços favoritos e dominar cada gesto.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Hogwarts Legacy 2.0", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(28.dp))
-        OutlinedTextField(email, { email = it }, Modifier.fillMaxWidth(), label = { Text("E-mail") }, singleLine = true)
+        OutlinedTextField(email, { email = it }, Modifier.fillMaxWidth(), label = { Text("E-mail") }, singleLine = true, colors = loginFieldColors)
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
             password, { password = it }, Modifier.fillMaxWidth(), label = { Text("Senha") },
-            visualTransformation = PasswordVisualTransformation(), singleLine = true
+            visualTransformation = PasswordVisualTransformation(), singleLine = true, colors = loginFieldColors
         )
         state.error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 10.dp)) }
         Spacer(Modifier.height(18.dp))
         Button(
             modifier = Modifier.fillMaxWidth(), enabled = !state.isWorking,
-            onClick = { if (isRegister) onRegister(email, password) else onLogin(email, password) }
+            onClick = { if (isRegister) onRegister(email, password) else onLogin(email, password) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
         ) { Text(if (state.isWorking) "Aguarde..." else if (isRegister) "Criar conta" else "Entrar") }
         TextButton(onClick = { isRegister = !isRegister }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(if (isRegister) "Já tenho uma conta" else "Ainda não tenho conta")
